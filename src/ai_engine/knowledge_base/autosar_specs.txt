@@ -1,0 +1,3 @@
+﻿[AUTOSAR_ADAPTIVE_PHM]: Platform Health Management ensures software execution integrity.
+[ISO_26262_ASIL_D]: Requires redundant communication paths and spatial isolation.
+[SOMEIP_CONFIG]: Service discovery must occur within 100ms of startup.
