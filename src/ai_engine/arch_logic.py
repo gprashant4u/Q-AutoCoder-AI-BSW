@@ -1,49 +1,40 @@
 ﻿import json
+import os
 
-class AutoArchEngine:
+class AUTOSAR_AI_Engine:
     def __init__(self):
-        self.rules = ["ISO_26262", "ASIL_D", "AUTOSAR_ADAPTIVE"]
-
-    def validate_safety(self, manifest):
-        # AI-driven safety check: Ensures 'ASIL' is defined for critical services
-        if "ServiceInstance" in manifest and "ASIL" not in manifest["ServiceInstance"]:
-            return False, "Safety Violation: ASIL level missing for R&D prototype."
-        return True, "Safety Check Passed."
-
-    def generate_manifest(self, req_type):
-        # Simulated LLM output mapping requirements to architecture
-        manifest = {
-            "ServiceInstance": {
-                "Name": f"{req_type}_Service",
-                "Deployment": "SOME/IP",
-                "ASIL": "D",  # AI automatically injects safety levels
-                "CycleTime": "10ms"
-            }
+        self.knowledge_base = {
+            "PHM": "Platform Health Management is required for ASIL-D.",
+            "SOMEIP": "SOME/IP requires a Service ID and Instance ID.",
+            "DOIP": "Diagnostics over IP requires a valid logical address."
         }
-        return manifest
+
+    def analyze_requirement(self, file_path):
+        """Mock RAG: Reads a file and 'retrieves' relevant safety standards."""
+        if not os.path.exists(file_path):
+            return {"error": "Source file not found."}
+            
+        with open(file_path, 'r') as f:
+            content = f.read().upper()
+            
+        findings = []
+        for key, value in self.knowledge_base.items():
+            if key in content:
+                findings.append(value)
+        
+        return {
+            "file": file_path,
+            "detected_components": [k for k in self.knowledge_base.keys() if k in content],
+            "recommendations": findings
+        }
 
 if __name__ == "__main__":
-    engine = AutoArchEngine()
-    new_manifest = engine.generate_manifest("BrakeControl")
-    is_safe, msg = engine.validate_safety(new_manifest)
+    engine = AUTOSAR_AI_Engine()
+    # Create a dummy requirement file to process
+    with open('input_req.txt', 'w') as f:
+        f.write("Need a SOMEIP service with PHM support.")
     
-    print(f"Result: {msg}")
-    with open('output/manifests/brake_service_manifest.json', 'w') as f:
-        json.dump(new_manifest, f, indent=4)
-    def generate_predictive_diag(self):
-        # AI use case: Analyzing bus load to predict stack overflow
-        return {
-            "Module": "Diag_Manager",
-            "PredictiveModel": "LSTM_RNN",
-            "TargetMetric": "Buffer_Saturation",
-            "Threshold": "85%",
-            "Action": "Dynamic_Buffer_Allocation"
-        }
-    def generate_v2x_manifest(self):
-        # Aligning with 'Vehicle-to-Everything' R&D trends
-        return {
-            "Service": "V2X_Collision_Warning",
-            "Interface": "ara::v2x",
-            "LatencyRequirement": "5ms",
-            "ASIL": "D"
-        }
+    report = engine.analyze_requirement('input_req.txt')
+    print(json.dumps(report, indent=4))
+    with open('output/analysis_report.json', 'w') as f:
+        json.dump(report, f, indent=4)
