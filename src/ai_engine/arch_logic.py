@@ -1,40 +1,53 @@
 ﻿import json
 import os
 
-class AUTOSAR_AI_Engine:
+class AutoCoder_Stack_Generator:
     def __init__(self):
-        self.knowledge_base = {
-            "PHM": "Platform Health Management is required for ASIL-D.",
-            "SOMEIP": "SOME/IP requires a Service ID and Instance ID.",
-            "DOIP": "Diagnostics over IP requires a valid logical address."
-        }
+        self.output_dir = "output/generated_stack"
+        if not os.path.exists(self.output_dir):
+            os.makedirs(self.output_dir)
 
-    def analyze_requirement(self, file_path):
-        """Mock RAG: Reads a file and 'retrieves' relevant safety standards."""
-        if not os.path.exists(file_path):
-            return {"error": "Source file not found."}
-            
-        with open(file_path, 'r') as f:
-            content = f.read().upper()
-            
-        findings = []
-        for key, value in self.knowledge_base.items():
-            if key in content:
-                findings.append(value)
-        
-        return {
-            "file": file_path,
-            "detected_components": [k for k in self.knowledge_base.keys() if k in content],
-            "recommendations": findings
+    def generate_service_interface(self, service_name):
+        # Generates a functional C++ Header for Adaptive AUTOSAR
+        cpp_code = f"""
+#ifndef {service_name.upper()}_INTERFACE_H
+#define {service_name.upper()}_INTERFACE_H
+
+#include <ara/com/com_error_domain.h>
+
+namespace qorix {{
+namespace {service_name.lower()} {{
+    class {service_name}Interface {{
+    public:
+        virtual ~{service_name}Interface() = default;
+        virtual void ReportStatus() = 0;
+        virtual void TriggerOptimization() = 0;
+    }};
+}}
+}}
+#endif
+"""
+        file_path = os.path.join(self.output_dir, f"{service_name.lower()}_interface.h")
+        with open(file_path, 'w') as f:
+            f.write(cpp_code)
+        return file_path
+
+    def generate_execution_manifest(self, service_name):
+        # Generates the JSON Manifest required for deployment
+        manifest = {
+            "ServiceInstance": service_name,
+            "Deployment": "SOME/IP",
+            "Port": 30490,
+            "Security": "TLS_1.3",
+            "ASIL": "D"
         }
+        file_path = os.path.join(self.output_dir, f"{service_name.lower()}_manifest.json")
+        with open(file_path, 'w') as f:
+            json.dump(manifest, f, indent=4)
+        return file_path
 
 if __name__ == "__main__":
-    engine = AUTOSAR_AI_Engine()
-    # Create a dummy requirement file to process
-    with open('input_req.txt', 'w') as f:
-        f.write("Need a SOMEIP service with PHM support.")
-    
-    report = engine.analyze_requirement('input_req.txt')
-    print(json.dumps(report, indent=4))
-    with open('output/analysis_report.json', 'w') as f:
-        json.dump(report, f, indent=4)
+    gen = AutoCoder_Stack_Generator()
+    h_file = gen.generate_service_interface("PredictiveDiag")
+    j_file = gen.generate_execution_manifest("PredictiveDiag")
+    print(f"Generated Code Stack: \n- {h_file}\n- {j_file}")
