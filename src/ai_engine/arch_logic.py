@@ -30,3 +30,20 @@ if __name__ == "__main__":
     print(f"Result: {msg}")
     with open('output/manifests/brake_service_manifest.json', 'w') as f:
         json.dump(new_manifest, f, indent=4)
+    def generate_predictive_diag(self):
+        # AI use case: Analyzing bus load to predict stack overflow
+        return {
+            "Module": "Diag_Manager",
+            "PredictiveModel": "LSTM_RNN",
+            "TargetMetric": "Buffer_Saturation",
+            "Threshold": "85%",
+            "Action": "Dynamic_Buffer_Allocation"
+        }
+    def generate_v2x_manifest(self):
+        # Aligning with 'Vehicle-to-Everything' R&D trends
+        return {
+            "Service": "V2X_Collision_Warning",
+            "Interface": "ara::v2x",
+            "LatencyRequirement": "5ms",
+            "ASIL": "D"
+        }
