@@ -1,0 +1,7 @@
+{
+    "ServiceInstance": "PredictiveDiag",
+    "Deployment": "SOME/IP",
+    "Port": 30490,
+    "Security": "TLS_1.3",
+    "ASIL": "D"
+}

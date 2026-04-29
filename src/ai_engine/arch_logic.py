@@ -51,3 +51,11 @@ if __name__ == "__main__":
     h_file = gen.generate_service_interface("PredictiveDiag")
     j_file = gen.generate_execution_manifest("PredictiveDiag")
     print(f"Generated Code Stack: \n- {h_file}\n- {j_file}")
+if __name__ == "__main__":
+    gen = AutoCoder_Stack_Generator()
+    # Generating a high-safety Collision Avoidance Service
+    h_file = gen.generate_service_interface("CollisionAvoidance")
+    j_file = gen.generate_execution_manifest("CollisionAvoidance")
+    print(f"\n[SUCCESS] Code Stack Generated for CollisionAvoidance:")
+    print(f"- C++ Header: {h_file}")
+    print(f"- JSON Manifest: {j_file}")
